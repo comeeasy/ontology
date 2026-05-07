@@ -1,1 +1,4 @@
 *.pyc
+ontology/projects/**/abox/config.ini
+ontology/projects/**/abox/output.nq
+ontology/projects/**/.env

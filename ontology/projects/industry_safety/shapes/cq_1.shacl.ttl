@@ -1,0 +1,23 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+
+is:CQ1Shape
+    a sh:NodeShape ;
+    sh:targetClass is:사업장 ;
+    sh:sparql [
+        sh:message "제17조제1항 위반: 상시근로자 50인 이상 사업장에 안전관리자가 선임되어 있지 않습니다." ;
+        sh:select """
+            PREFIX is: <http://infiniq.co.kr/2026/industry_safety#>
+            SELECT $this WHERE {
+                {
+                    SELECT $this (COUNT(?근로자) AS ?수) WHERE {
+                        $this is:고용하다 ?근로자 .
+                    } GROUP BY $this
+                }
+                FILTER (?수 >= 50)
+                FILTER NOT EXISTS {
+                    $this is:선임하다 ?관리자 .
+                }
+            }
+        """ ;
+    ] .

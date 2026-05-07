@@ -2,7 +2,6 @@
 
 산업안전보건법 조항을 OWL 2 DL 온톨로지로 모델링하고, SHACL로 준수 여부를 검증하는 프로젝트.
 
-상세 아키텍처 및 로드맵 → [`plan.md`](plan.md)  
 법률 조항 원문 → [`ontology/projects/industry_safety/resources/산업안전보건법.md`](ontology/projects/industry_safety/resources/산업안전보건법.md)  
 Competency Questions → [`ontology/projects/industry_safety/resources/cq.md`](ontology/projects/industry_safety/resources/cq.md)
 
@@ -11,65 +10,39 @@ Competency Questions → [`ontology/projects/industry_safety/resources/cq.md`](o
 ## 디렉토리 구조
 
 ```
-KG/
-├── ex1.ttl           # KG 예제
-└── kg.ttl            # KG 메인
-
-demo/
-├── app.py                  # Streamlit 진입점
-├── config.py               # 규칙 메타데이터 (법조항, CQ, 파일경로 등)
-├── settings.py             # 전역 경로 설정 (PROJECT_ROOT, LAW_FILE)
-├── services/
-│   ├── validator.py        # pyshacl 호출 + RDF 결과 파싱
-│   ├── etl.py              # ETL 스크립트 실행
-│   ├── loader.py           # TTL, 법률 텍스트 파일 읽기
-│   └── abox_reader.py      # ABox 파일 읽기
-└── components/
-    ├── law_panel.py        # ① 법률 조항 탭
-    ├── cq_panel.py         # ② CQ 탭
-    ├── tbox_panel.py       # ③ TBox 탭
-    ├── shacl_panel.py      # ④ SHACL 탭
-    └── result_panel.py     # ⑤ 검증 탭
-
 ontology/
 ├── projects/
-│   ├── industry_safety/            # 산업안전보건법 프로젝트
-│   │   ├── schema/                 # TBox — OWL 클래스·프로퍼티 정의
-│   │   │   ├── r1.ttl              # 제17조 — 안전관리자 선임
-│   │   │   ├── r2.ttl              # 제29조 — 안전보건교육
-│   │   │   ├── r3.ttl              # 제36조 — 위험성평가
-│   │   │   ├── r4.ttl              # 제93조 — 안전검사
-│   │   │   └── r5.ttl              # 제125조 — 작업환경측정
-│   │   ├── shapes/                 # SHACL Shapes — 법률 제약 표현
-│   │   │   └── r1.shacl.ttl
-│   │   ├── abox/                   # ABox — ETL로 생성된 인스턴스 데이터
+│   ├── industry_safety/              # 산업안전보건법 프로젝트
+│   │   ├── .env                      # 프로젝트 설정 (DB_URL, Fuseki, Reasoner) — gitignore
+│   │   ├── schema/                   # TBox — OWL 클래스·프로퍼티 정의
+│   │   │   └── cq_[n].ttl            # CQ별 TBox (cq_1.ttl, cq_2.ttl, ...)
+│   │   ├── shapes/                   # SHACL Shapes — 법률 제약 표현
+│   │   │   └── cq_[n].shacl.ttl      # CQ별 SHACL Shape
+│   │   ├── abox/                     # ABox — ETL로 생성된 인스턴스 데이터
 │   │   │   ├── r2rml/
-│   │   │   │   └── r1.abox.rr.ttl  # R2RML 매핑 파일 (PostgreSQL → RDF)
-│   │   │   ├── config.ini           # morph-kgc 설정 (DB 연결 + 매핑 파일 경로)
-│   │   │   ├── r1.abox.nq           # materialization 결과 (N-QUADS)
-│   │   │   └── r1.abox_py.ttl       # Python ETL 결과 (레거시)
-│   │   └── resources/              # 참고 자료
-│   │       ├── 산업안전보건법.md
-│   │       └── cq.md
+│   │   │   │   └── cq_[n].abox.rr.ttl  # CQ별 R2RML 매핑
+│   │   │   ├── config.ini            # morph-kgc 설정 (gen_config.sh 자동 생성) — gitignore
+│   │   │   └── cq_[n].abox.nq        # materialization 결과 (N-QUADS) — gitignore
+│   │   └── resources/                # 참고 자료
+│   │       ├── wiki/
+│   │       │   └── 산업안전보건법.md  # 도메인 wiki (doc-wiki 생성)
+│   │       ├── 산업안전보건법.md      # 원문
+│   │       └── cq.md                 # Competency Questions
 │   └── metttc/
+│       ├── .env
 │       └── schema/
-│           └── stp_mett_tc_extension_schema_v0_1.ttl
-└── scripts/                        # 실행 스크립트
-    ├── create_kg.sh                 # KG 생성
-    ├── delete_graph.sh              # Named Graph 삭제
-    ├── nt_to_ttl.sh                 # N-Triples → Turtle 변환
-    ├── reason.sh                    # ROBOT 추론 및 검증
-    └── upload.sh                    # Fuseki 적재
+└── scripts/                          # 실행 스크립트
+    ├── reason.sh                     # ROBOT 추론 검증 (프로젝트별 .env 참조)
+    ├── upload.sh                     # Fuseki 적재 (TTL: PUT+graph / NQ: POST)
+    └── gen_config.sh                 # morph-kgc config.ini 자동 생성
 
 rdb/
-├── docker-compose.yml        # PostgreSQL 컨테이너 설정
+├── docker-compose.yml          # PostgreSQL 컨테이너 설정
 └── scripts/
-    ├── init_db.sql            # 테이블 생성 + 테스트 데이터 삽입
-    ├── etl.sql                # ABox 생성용 JOIN 쿼리
-    ├── etl.py                 # PostgreSQL → Turtle ETL 스크립트
-    ├── normal_worker_map.sql  # 상시근로자 뷰 정의
-    ├── safety_manager_map.sql # 안전관리자 뷰 정의
-    └── schema_check.sql       # DB 스키마 검증 쿼리
+    ├── init_db.sql              # 테이블 생성 + 테스트 데이터 삽입
+    ├── normal_worker_map.sql    # 상시근로자 뷰 정의
+    ├── safety_manager_map.sql   # 안전관리자 뷰 정의
+    └── schema_check.sql         # DB 스키마 조회 (information_schema)
 ```
 
 ---
@@ -81,17 +54,17 @@ rdb/
 ### 전체 흐름
 
 ```
-/doc-wiki [문서]     문서 → 도메인 wiki          resources/wiki/[문서명].md
+/doc-wiki [문서경로]            문서 → 도메인 wiki          resources/wiki/[문서명].md
       ↓ Human Review
-/cq-extract          wiki → CQ 도출              resources/cq.md
+/cq-extract [wiki경로]          wiki → CQ 도출              resources/cq.md
       ↓ Human Review
-/tbox-design cq_n    CQ  → TBox + ROBOT 검증     schema/cq_n.ttl
+/tbox-design [cq_file] [cq_n]  CQ  → TBox + ROBOT 검증     schema/cq_[n].ttl
       ↓ Human Review
-/shacl-design cq_n   TBox → SHACL + pyshacl 검증 shapes/cq_n.shacl.ttl
+/shacl-design [cq_file] [cq_n] TBox → SHACL + pyshacl 검증 shapes/cq_[n].shacl.ttl
       ↓ Human Review
-/mapping-design cq_n CQ + DB 스키마 → R2RML 매핑 abox/r2rml/cq_n.abox.rr.ttl
+/mapping-design [cq_file] [cq_n] CQ + DB → R2RML 매핑       abox/r2rml/cq_[n].abox.rr.ttl
       ↓ Human Review
-/abox-build cq_n     R2RML → ABox + SHACL 검증   abox/cq_n.abox.nq
+/abox-build [cq_file] [cq_n]   R2RML → ABox + SHACL 검증   abox/cq_[n].abox.nq
       ↓ Human Review
 ```
 
@@ -140,9 +113,21 @@ rdb/
 | Docker Desktop | PostgreSQL, ROBOT 추론 | `docker --version` |
 | Apache Jena Fuseki | Triple Store | `http://localhost:3030` 접속 확인 |
 | Python 3.x | ETL, SHACL 검증, 데모 앱 | `python --version` |
+| Conda `onto` 환경 | morph-kgc 실행 전용 | `conda activate onto` |
 
 ```bash
-pip install pyshacl psycopg2-binary rdflib streamlit morph-kgc[postgresql]
+# 기본 환경
+pip install pyshacl psycopg2-binary rdflib streamlit
+
+# morph-kgc는 onto conda 환경에 별도 설치
+conda create -n onto python=3.11 -y
+conda run -n onto pip install morph-kgc sqlalchemy psycopg
+```
+
+morph-kgc 실행 시 반드시 `onto` 환경을 사용한다:
+
+```bash
+conda run -n onto python -m morph_kgc ontology/projects/industry_safety/abox/config.ini
 ```
 
 ### PostgreSQL (rdb)
@@ -183,17 +168,13 @@ docker run -d --name fuseki -p 3030:3030 \
 
 ### Named Graph 구조
 
-이 프로젝트는 그래프를 목적별로 분리한다.
+CQ 단위로 그래프를 분리한다. `upload.sh`가 파일명 기준으로 그래프 IRI를 자동 결정한다.
 
-| Named Graph IRI | 용도 |
-|-----------------|------|
-| `.../schema` | TBox (클래스·프로퍼티) |
-| `.../shapes` | SHACL Shapes |
-| `.../data` | ABox (인스턴스) |
-| `.../inferred` | 추론 결과 (선택적) |
-
-`upload.sh`가 파일명 기준으로 그래프 IRI를 자동 결정한다.  
-예: `schema/r1.ttl` → `http://infiniq.co.kr/2026/industry_safety/r1`
+| 파일 | Named Graph IRI | 업로드 방식 |
+|------|-----------------|------------|
+| `schema/cq_[n].ttl` | `.../cq_[n]` | PUT (TTL) |
+| `shapes/cq_[n].shacl.ttl` | `.../cq_[n].shacl` | PUT (TTL) |
+| `abox/cq_[n].abox.nq` | `.../cq_[n].abox` (파일 내 포함) | POST (N-Quads) |
 
 ### Fuseki 적재
 
@@ -232,40 +213,47 @@ bash ontology/scripts/reason.sh
 
 ```
 PostgreSQL (factory, person, role 테이블)
-    ↓ DB VIEW (v_normal_worker, v_safety_manager_map)
-    ↓ R2RML 매핑 (r2rml/r1.abox.rr.ttl)
+    ↓ rr:sqlQuery (JOIN 직접 — VIEW 불필요)
+    ↓ R2RML 매핑 (r2rml/cq_[n].abox.rr.ttl)
     ↓ morph-kgc materialization
-ontology/projects/industry_safety/abox/r1.abox.nq   ← Named Graph 포함 (N-QUADS)
+abox/cq_[n].abox.nq   ← Named Graph 포함 (N-QUADS)
 ```
 
-**TriplesMap 구성:**
+### config.ini 자동 생성
 
-| TriplesMap | 소스 | 생성 트리플 |
-|---|---|---|
-| FactoryMap | `factory` 테이블 | `factory/{id} rdf:type is:사업장` |
-| NormalWorkerMap | VIEW `v_normal_worker` | `person/{id} rdf:type is:상시근로자` |
-| NormalWorkerFactoryMap | VIEW `v_normal_worker` | `factory/{id} is:고용하다 person/{id}` |
-| SafetyManagerMap | VIEW `v_safety_manager_map` | `person/{id} rdf:type is:안전관리자` |
-| SafetyManagerFactoryMap | VIEW `v_safety_manager_map` | `factory/{id} is:선임하다 person/{id}` |
-
-### morph-kgc 실행
-
-매핑: `ontology/projects/industry_safety/abox/r2rml/r1.abox.rr.ttl`  
-설정: `ontology/projects/industry_safety/abox/config.ini`
+`gen_config.sh`가 `.env`와 `r2rml/*.rr.ttl`을 스캔해 `config.ini`를 생성한다. 수동 편집 불필요.
 
 ```bash
-python -m morph_kgc ontology/projects/industry_safety/abox/config.ini
+bash ontology/scripts/gen_config.sh industry_safety
 ```
 
-`r1.abox.nq` (N-QUADS) 파일이 생성된다.
+### morph-kgc 실행 (CQ별)
+
+`/abox-build` 스킬이 CQ-specific 임시 config를 생성해 실행한다.
+
+```bash
+source ontology/projects/industry_safety/.env
+cat > /tmp/cq_[n]_config.ini << EOF
+[CONFIGURATION]
+output_file: ontology/projects/industry_safety/abox/cq_[n].abox.nq
+output_format: N-QUADS
+
+[DataSource1]
+mappings: ontology/projects/industry_safety/abox/r2rml/cq_[n].abox.rr.ttl
+db_url: $DB_URL
+EOF
+conda run -n onto python3 -m morph_kgc /tmp/cq_[n]_config.ini
+```
 
 ### Fuseki 업로드
 
+N-Quads는 named graph가 파일 내 포함 → POST `/data` (graph 지정 없음).
+
 ```bash
-curl -u admin:admin -X PUT \
-  -H "Content-Type: application/n-quads" \
-  --data-binary @ontology/projects/industry_safety/abox/r1.abox.nq \
-  "http://localhost:3030/industry_safety/data?graph=http://infiniq.co.kr/2026/industry_safety/r1.abox"
+# 기존 그래프 삭제 후 재적재
+curl -u admin:admin -X DELETE \
+  "http://localhost:3030/industry_safety/data?graph=http://infiniq.co.kr/2026/industry_safety/cq_[n].abox"
+bash ontology/scripts/upload.sh ontology/projects/industry_safety/abox/cq_[n].abox.nq
 ```
 
 ---
@@ -274,8 +262,9 @@ curl -u admin:admin -X PUT \
 
 ```bash
 pyshacl \
-  -s ontology/projects/industry_safety/shapes/r1.shacl.ttl \
-  -d ontology/projects/industry_safety/abox/r1.abox.nq
+  -s ontology/projects/industry_safety/shapes/cq_[n].shacl.ttl \
+  -d ontology/projects/industry_safety/abox/cq_[n].abox.nq \
+  --ont-graph ontology/projects/industry_safety/schema/cq_[n].ttl
 ```
 
 **결과 해석:**
@@ -300,43 +289,25 @@ TBox(.ttl), SHACL(.shacl.ttl), ABox 매핑은 CQ 하나당 하나씩 작성된�
 ```
 [DATA]       산업안전보건법.md
                     |
-[PROCESS]    법률 분석 + CQ 도출
-             OUT: cq.md (5개 CQ 정의)
+[SKILL]  /doc-wiki → wiki/산업안전보건법.md
+[SKILL]  /cq-extract → cq.md (7개 CQ)
                     |
-        ┌───────────┼───────────┬───────────┬───────────┐
-       CQ1         CQ2         CQ3         CQ4         CQ5
-        |
-        ▼
-[PROCESS]  TBox 모델링  <─────────────────────┐
-           OUT: schema/rN.ttl                 | 오류시 수정
-                    |                         |
-[PROCESS]  ROBOT reason/report ───────────────┘
+        CQ1 ~ CQ7 (각 CQ 독립 진행)
                     |
-               통과 |
-                    |
-[PROCESS]  SHACL Shape 작성
-           OUT: shapes/rN.shacl.ttl
-                    |
-- - - - - - - - - - ↓ - - - - - - - - - - - - - - - - -
-                    |
-[DATA]       PostgreSQL DB  ← 공장 측 제공 데이터
-                    |
-[PROCESS]  ETL (R2RML + morph-kgc)
-           OUT: abox/rN.abox.nq
-                    |
-[PROCESS]  SHACL 검증 (pyshacl)
-           OUT: Validation Report (Conforms: True/False)
+[SKILL]  /tbox-design   → schema/cq_[n].ttl   (ROBOT 검증 + Fuseki 업로드)
+[SKILL]  /shacl-design  → shapes/cq_[n].shacl.ttl (pyshacl 검증 + Fuseki 업로드)
+[SKILL]  /mapping-design → abox/r2rml/cq_[n].abox.rr.ttl
+[SKILL]  /abox-build    → abox/cq_[n].abox.nq (Fuseki 업로드 + SHACL 검증)
 ```
 
 **현재 진행 상태:**
 
-| 단계 | CQ1 | CQ2 | CQ3 | CQ4 | CQ5 |
-|------|-----|-----|-----|-----|-----|
-| TBox 모델링 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| ROBOT 검증 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| SHACL 작성 | ✅ | - | - | - | - |
-| ETL 매핑   | ✅ | - | - | - | - |
-| SHACL 검증 | ✅ | - | - | - | - |
+| 단계 | CQ1 | CQ2 | CQ3 | CQ4 | CQ5 | CQ6 | CQ7 |
+|------|-----|-----|-----|-----|-----|-----|-----|
+| TBox (/tbox-design)     | ✅ | - | - | - | - | - | - |
+| SHACL (/shacl-design)   | ✅ | - | - | - | - | - | - |
+| R2RML (/mapping-design) | ✅ | - | - | - | - | - | - |
+| ABox (/abox-build)      | ✅ | - | - | - | - | - | - |
 
 ---
 

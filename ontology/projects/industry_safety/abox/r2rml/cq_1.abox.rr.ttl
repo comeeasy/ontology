@@ -1,0 +1,64 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+
+<#FactoryMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:tableName "factory" ] ;
+    rr:subjectMap [
+        rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{id}" ;
+        rr:class is:사업장 ;
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] .
+
+<#NormalWorkerMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:sqlQuery """
+        SELECT p.id AS person_id, p.factory AS factory_id
+        FROM person p JOIN role r ON p.role = r.id
+        WHERE r.name = '상시근로자'
+    """ ] ;
+    rr:subjectMap [
+        rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ;
+        rr:class is:상시근로자 ;
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] .
+
+<#GoydongMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:sqlQuery """
+        SELECT p.id AS person_id, p.factory AS factory_id
+        FROM person p JOIN role r ON p.role = r.id
+        WHERE r.name = '상시근로자'
+    """ ] ;
+    rr:subjectMap [
+        rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{factory_id}" ;
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate is:고용하다 ;
+        rr:objectMap [ rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ]
+    ] .
+
+<#SafetyManagerMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:sqlQuery """
+        SELECT p.id AS person_id, p.factory AS factory_id
+        FROM person p JOIN role r ON p.role = r.id
+        WHERE r.name = '안전관리자'
+    """ ] ;
+    rr:subjectMap [
+        rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ;
+        rr:class is:안전관리자 ;
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] .
+
+<#SeonimMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:sqlQuery """
+        SELECT p.id AS person_id, p.factory AS factory_id
+        FROM person p JOIN role r ON p.role = r.id
+        WHERE r.name = '안전관리자'
+    """ ] ;
+    rr:subjectMap [
+        rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{factory_id}" ;
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate is:선임하다 ;
+        rr:objectMap [ rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ]
+    ] .
