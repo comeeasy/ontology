@@ -79,12 +79,35 @@ morph-kgc 실패 시:
 
 ### 2단계 — 설계 결정 명시
 
+**컬럼 → 프로퍼티 유형 판단 (매핑 대상 테이블의 모든 컬럼에 적용):**
+
+```
+각 컬럼에 대해:
+
+FK인가?
+├── Yes → 참조 테이블 행이 TriplesMap으로 매핑되는 개체인가?
+│          ├── Yes → Object Property (rr:template으로 IRI 연결)
+│          └── No  → 코드/열거형인가?
+│                     ├── rdf:type 결정에 쓰이는가? → WHERE 필터로 소비, 트리플 미생성
+│                     └── 그 외               → Data Property (xsd:string)
+└── No  → 숫자·날짜·불린 → Data Property (xsd:integer / xsd:date / xsd:boolean)
+           사람·사물 이름   → rdfs:label (언어 태그 "@ko")
+           그 외 문자열    → Data Property (xsd:string)
+```
+
+CQ 검증에 직접 필요하지 않더라도 **식별 레이블 컬럼(name 등)은 반드시 rdfs:label로 매핑**한다.
+위반 노드 URI만 보여서는 어느 개체인지 파악할 수 없다.
+
 파일 작성 전에 다음을 서술한다:
 
 ```
 [설계 결정]
+- 컬럼 분류 (테이블별):
+    [테이블].[컬럼] → [Object Property | Data Property | rdfs:label | rdf:type 소비 | 미매핑] + 이유
+    ...
 - 필요한 트리플 패턴:
     <factory/{id}> a is:사업장
+    <factory/{id}> rdfs:label "..."@ko
     <factory/{id}> is:고용하다 <person/{id}>
     ...
 - TriplesMap 목록: [이름 | 소스(테이블/View/SQL) | 생성 트리플]
