@@ -1,17 +1,38 @@
 @prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Ontology metadata
+<http://infiniq.co.kr/2026/industry_safety/cq_1> a owl:Ontology ;
+    owl:versionInfo "1.0.0" ;
+    dcterms:created "2026-05-07"^^xsd:date ;
+    dcterms:source <https://www.law.go.kr/법령/산업안전보건법> ;
+    rdfs:label "CQ_1 TBox — 안전관리자 선임"@ko .
 
 # Classes
-is:사업장 a owl:Class .
-is:상시근로자 a owl:Class .
-is:안전관리자 a owl:Class .
+is:사업장 a owl:Class ;
+    rdfs:label "사업장"@ko ;
+    rdfs:comment "산업안전보건법 적용 대상 사업을 행하는 장소. 안전관리자 선임 의무의 주체. 근거: 제17조제1항."@ko .
+
+is:상시근로자 a owl:Class ;
+    rdfs:label "상시근로자"@ko ;
+    rdfs:comment "사업장에 상시적으로 고용된 근로자. 안전관리자 선임 의무 산정 기준 인원. 근거: 제17조제1항."@ko .
+
+is:안전관리자 a owl:Class ;
+    rdfs:label "안전관리자"@ko ;
+    rdfs:comment "사업장의 안전에 관한 기술적 사항을 관리하는 자. 상시근로자 50인 이상 사업장에 선임 의무. 근거: 제17조."@ko .
 
 # Object Properties
 is:고용하다 a owl:ObjectProperty ;
     rdfs:domain is:사업장 ;
-    rdfs:range is:상시근로자 .
+    rdfs:range is:상시근로자 ;
+    rdfs:label "고용하다"@ko ;
+    rdfs:comment "사업장이 상시근로자를 고용하는 관계. 안전관리자 선임 의무 판단을 위한 인원 집계에 사용. 근거: 제17조제1항."@ko .
 
 is:선임하다 a owl:ObjectProperty ;
     rdfs:domain is:사업장 ;
-    rdfs:range is:안전관리자 .
+    rdfs:range is:안전관리자 ;
+    rdfs:label "선임하다"@ko ;
+    rdfs:comment "사업장이 안전관리자를 선임하는 관계. 상시근로자 50인 이상 사업장의 이행 여부 검증에 사용. 근거: 제17조제1항."@ko .

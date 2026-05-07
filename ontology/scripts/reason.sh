@@ -45,7 +45,7 @@ for TTL_FILE in $TTL_FILES; do
         -w /work \
         "$ODK_IMAGE" \
         robot report \
-            --input "$TTL_FILE"
+            --input "$TTL_FILE" || true  # OBO QC 위반은 비블로킹 (내부 온톨로지, OBO 제출 불필요)
 
     echo ""
 done

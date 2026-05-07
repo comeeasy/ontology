@@ -88,6 +88,7 @@ ROBOT 실패 시:
 - 새로 정의할 프로퍼티: [목록 + 이유]
 - 기존 TBox에서 재사용할 항목: [목록 + 출처 파일]
 - 제외한 후보: [목록 + 제외 이유]
+- 온톨로지 메타데이터: versionInfo=1.0.0, dcterms:created=[오늘 날짜], dcterms:source=[근거 법령 URL]
 - 불확실한 사항: [있으면 명시, 없으면 "없음"]
 ```
 
@@ -97,17 +98,37 @@ ROBOT 실패 시:
 
 `ontology/projects/industry_safety/schema/cq_[cq_n].ttl` 생성.
 
+**어노테이션 규칙:**
+- `rdfs:label`: 한국어 단어 하나 (도메인 용어와 정확히 일치)
+- `rdfs:comment`: "[법적·도메인 정의]. [이 CQ에서의 역할]. 근거: [조항]." 형식
+- 온톨로지 블록의 `dcterms:created`는 파일 최초 생성일이며 이후 변경하지 않는다.
+- `owl:versionInfo`는 `"1.0.0"` 으로 시작하며, 클래스/프로퍼티 구조 변경 시 마이너 버전을 올린다.
+
 ```turtle
 @prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+# Ontology metadata
+<http://infiniq.co.kr/2026/industry_safety/cq_[n]> a owl:Ontology ;
+    owl:versionInfo "1.0.0" ;
+    dcterms:created "[YYYY-MM-DD]"^^xsd:date ;
+    dcterms:source <[근거 법령 URL]> ;
+    rdfs:label "[CQ 제목]"@ko .
+
 # Classes
-...
+is:[클래스] a owl:Class ;
+    rdfs:label "[한국어 레이블]"@ko ;
+    rdfs:comment "[정의. 이 CQ에서의 역할. 근거: 제N조.]"@ko .
 
 # Object Properties
-...
+is:[프로퍼티] a owl:ObjectProperty ;
+    rdfs:domain is:[도메인] ;
+    rdfs:range is:[레인지] ;
+    rdfs:label "[한국어 레이블]"@ko ;
+    rdfs:comment "[관계의 의미. 이 CQ에서의 역할. 근거: 제N조.]"@ko .
 
 # Data Properties
 ...
