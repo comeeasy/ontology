@@ -1,85 +1,99 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rr:      <http://www.w3.org/ns/r2rml#> .
+@prefix is:      <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 
-# Mapping metadata
+# ── Mapping metadata ─────────────────────────────────────────────────────────
 <http://infiniq.co.kr/2026/industry_safety/cq_1.abox.r2rml> a rr:Mapping ;
     owl:versionInfo "1.0.0" ;
     dcterms:created "2026-05-07"^^xsd:date ;
-    dcterms:source <https://www.law.go.kr/법령/산업안전보건법> ;
-    rdfs:label "CQ_1 R2RML — 안전관리자 선임"@ko .
+    dcterms:source <https://www.law.go.kr/법령/산업안전보건법/(20240101,19611,20230816)/제17조> ;
+    rdfs:label "CQ_1 R2RML — 안전관리자 선임 의무"@ko .
 
-<#FactoryMap> a rr:TriplesMap ;
+# ── TriplesMap 1: 사업장 (Workplace) ─────────────────────────────────────────
+<#WorkplaceMap> a rr:TriplesMap ;
     rdfs:label "사업장 매핑"@ko ;
-    rdfs:comment "factory 테이블 → is:사업장 인스턴스. cq_1.abox 그래프."@ko ;
+    rdfs:comment "factory → is:Workplace. http://infiniq.co.kr/2026/industry_safety/cq_1.abox."@ko ;
     rr:logicalTable [ rr:tableName "factory" ] ;
     rr:subjectMap [
         rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{id}" ;
-        rr:class is:사업장 ;
+        rr:class is:Workplace ;
         rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label ;
+        rr:objectMap [
+            rr:column "name" ;
+            rr:language "ko"
+        ]
     ] .
 
-<#NormalWorkerMap> a rr:TriplesMap ;
+# ── TriplesMap 2: 상시근로자 (PermanentWorker) ────────────────────────────────
+<#PermanentWorkerMap> a rr:TriplesMap ;
     rdfs:label "상시근로자 매핑"@ko ;
-    rdfs:comment "role='상시근로자'인 person → is:상시근로자 인스턴스. cq_1.abox 그래프."@ko ;
-    rr:logicalTable [ rr:sqlQuery """
-        SELECT p.id AS person_id, p.factory AS factory_id
-        FROM person p JOIN role r ON p.role = r.id
-        WHERE r.name = '상시근로자'
-    """ ] ;
+    rdfs:comment "v_normal_worker → is:PermanentWorker. http://infiniq.co.kr/2026/industry_safety/cq_1.abox."@ko ;
+    rr:logicalTable [ rr:tableName "v_normal_worker" ] ;
     rr:subjectMap [
         rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ;
-        rr:class is:상시근로자 ;
+        rr:class is:PermanentWorker ;
         rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label ;
+        rr:objectMap [
+            rr:column "person_name" ;
+            rr:language "ko"
+        ]
     ] .
 
-<#GoydongMap> a rr:TriplesMap ;
-    rdfs:label "고용 관계 매핑"@ko ;
-    rdfs:comment "factory → person(상시근로자) is:고용하다 관계 생성. cq_1.abox 그래프."@ko ;
-    rr:logicalTable [ rr:sqlQuery """
-        SELECT p.id AS person_id, p.factory AS factory_id
-        FROM person p JOIN role r ON p.role = r.id
-        WHERE r.name = '상시근로자'
-    """ ] ;
+# ── TriplesMap 3: 고용 관계 — employsWorker (Workplace → PermanentWorker) ────
+<#EmploysWorkerMap> a rr:TriplesMap ;
+    rdfs:label "근로자고용 관계 매핑"@ko ;
+    rdfs:comment "v_normal_worker → is:employsWorker (factory→person). http://infiniq.co.kr/2026/industry_safety/cq_1.abox."@ko ;
+    rr:logicalTable [ rr:tableName "v_normal_worker" ] ;
     rr:subjectMap [
         rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{factory_id}" ;
         rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
     ] ;
     rr:predicateObjectMap [
-        rr:predicate is:고용하다 ;
-        rr:objectMap [ rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ]
+        rr:predicate is:employsWorker ;
+        rr:objectMap [
+            rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}"
+        ]
     ] .
 
+# ── TriplesMap 4: 안전관리자 (SafetyManager) ─────────────────────────────────
 <#SafetyManagerMap> a rr:TriplesMap ;
     rdfs:label "안전관리자 매핑"@ko ;
-    rdfs:comment "role='안전관리자'인 person → is:안전관리자 인스턴스. cq_1.abox 그래프."@ko ;
-    rr:logicalTable [ rr:sqlQuery """
-        SELECT p.id AS person_id, p.factory AS factory_id
-        FROM person p JOIN role r ON p.role = r.id
-        WHERE r.name = '안전관리자'
-    """ ] ;
+    rdfs:comment "v_safety_manager_map → is:SafetyManager. http://infiniq.co.kr/2026/industry_safety/cq_1.abox."@ko ;
+    rr:logicalTable [ rr:tableName "v_safety_manager_map" ] ;
     rr:subjectMap [
         rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ;
-        rr:class is:안전관리자 ;
+        rr:class is:SafetyManager ;
         rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label ;
+        rr:objectMap [
+            rr:column "person_name" ;
+            rr:language "ko"
+        ]
     ] .
 
-<#SeonimMap> a rr:TriplesMap ;
-    rdfs:label "선임 관계 매핑"@ko ;
-    rdfs:comment "factory → person(안전관리자) is:선임하다 관계 생성. cq_1.abox 그래프."@ko ;
-    rr:logicalTable [ rr:sqlQuery """
-        SELECT p.id AS person_id, p.factory AS factory_id
-        FROM person p JOIN role r ON p.role = r.id
-        WHERE r.name = '안전관리자'
-    """ ] ;
+# ── TriplesMap 5: 선임 관계 — appointsManager (Workplace → SafetyManager) ────
+<#AppointsManagerMap> a rr:TriplesMap ;
+    rdfs:label "안전관리자선임 관계 매핑"@ko ;
+    rdfs:comment "v_safety_manager_map → is:appointsManager (factory→person). http://infiniq.co.kr/2026/industry_safety/cq_1.abox."@ko ;
+    rr:logicalTable [ rr:tableName "v_safety_manager_map" ] ;
     rr:subjectMap [
         rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{factory_id}" ;
         rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/cq_1.abox> ]
     ] ;
     rr:predicateObjectMap [
-        rr:predicate is:선임하다 ;
-        rr:objectMap [ rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ]
+        rr:predicate is:appointsManager ;
+        rr:objectMap [
+            rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}"
+        ]
     ] .

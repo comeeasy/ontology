@@ -20,8 +20,7 @@ for TTL_FILE in $TTL_FILES; do
         # shellcheck source=/dev/null
         source "$ENV_FILE"
     else
-        echo "WARNING: $ENV_FILE not found, skipping $TTL_FILE"
-        continue
+        echo "WARNING: $ENV_FILE not found, using default REASONER=hermit"
     fi
 
     REASONER=${REASONER:-hermit}

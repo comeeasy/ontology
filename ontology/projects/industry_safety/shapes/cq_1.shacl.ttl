@@ -1,23 +1,39 @@
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix is:      <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 
+# ── Ontology metadata ─────────────────────────────────────────────────────────
+<http://infiniq.co.kr/2026/industry_safety/cq_1.shacl> a owl:Ontology ;
+    owl:versionInfo "1.0.0" ;
+    dcterms:created "2026-05-07"^^xsd:date ;
+    dcterms:source <https://www.law.go.kr/법령/산업안전보건법/(20240101,19611,20230816)/제17조> ;
+    rdfs:label "CQ_1 안전관리자 선임 의무 SHACL"@ko .
+
+# ── Shape ─────────────────────────────────────────────────────────────────────
 is:CQ1Shape
     a sh:NodeShape ;
-    sh:targetClass is:사업장 ;
+    sh:targetClass is:Workplace ;
     sh:sparql [
-        sh:message "제17조제1항 위반: 상시근로자 50인 이상 사업장에 안전관리자가 선임되어 있지 않습니다." ;
+        sh:message "산업안전보건법 제17조제1항 위반: 상시근로자 50인 이상 사업장({$this})에 안전관리자가 선임되어 있지 않습니다. (시행령 별표3)" ;
         sh:select """
             PREFIX is: <http://infiniq.co.kr/2026/industry_safety#>
-            SELECT $this WHERE {
+            SELECT $this
+            WHERE {
                 {
-                    SELECT $this (COUNT(?근로자) AS ?수) WHERE {
-                        $this is:고용하다 ?근로자 .
-                    } GROUP BY $this
+                    SELECT $this
+                           (COUNT(DISTINCT ?pw) AS ?pwCount)
+                           (COUNT(DISTINCT ?sm) AS ?smCount)
+                    WHERE {
+                        $this a is:Workplace .
+                        OPTIONAL { $this is:employsWorker ?pw . ?pw a is:PermanentWorker . }
+                        OPTIONAL { $this is:appointsManager ?sm . }
+                    }
+                    GROUP BY $this
                 }
-                FILTER (?수 >= 50)
-                FILTER NOT EXISTS {
-                    $this is:선임하다 ?관리자 .
-                }
+                FILTER (?pwCount >= 50 && ?smCount = 0)
             }
         """ ;
     ] .

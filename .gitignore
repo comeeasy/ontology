@@ -1,4 +1,6 @@
 *.pyc
 ontology/projects/**/abox/config.ini
 ontology/projects/**/abox/output.nq
+ontology/projects/**/abox/*.nq
 ontology/projects/**/.env
+KG/
