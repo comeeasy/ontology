@@ -91,6 +91,7 @@ morph-kgc 실패 시:
 - 신규 View 필요 여부: [필요 / 불필요 + 이유]
 - Named Graph IRI: http://infiniq.co.kr/2026/industry_safety/cq_[n].abox
 - NULL 컬럼 처리: [해당 컬럼 | 처리 방식]
+- R2RML 메타데이터: versionInfo=1.0.0, dcterms:created=[오늘 날짜], dcterms:source=[근거 법령 URL]
 - 불확실한 사항: [있으면 명시, 없으면 "없음"]
 ```
 
@@ -113,11 +114,29 @@ View가 불필요하면 이 단계를 건너뛴다.
 
 `ontology/projects/industry_safety/abox/r2rml/cq_[cq_n].abox.rr.ttl` 생성.
 
+**어노테이션 규칙:**
+- `rr:Mapping` 블록: 파일 수준 메타데이터 (versionInfo, dcterms:created, dcterms:source, rdfs:label)
+- 각 TriplesMap: `rdfs:label`(단명) + `rdfs:comment`("[소스] → [타깃 클래스/프로퍼티]. [그래프]." 형식)
+- `dcterms:created`는 파일 최초 생성일이며 이후 변경하지 않는다.
+
 ```turtle
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Mapping metadata
+<http://infiniq.co.kr/2026/industry_safety/cq_[n].abox.r2rml> a rr:Mapping ;
+    owl:versionInfo "1.0.0" ;
+    dcterms:created "[YYYY-MM-DD]"^^xsd:date ;
+    dcterms:source <[근거 법령 URL]> ;
+    rdfs:label "CQ_[n] R2RML — [CQ 제목]"@ko .
 
 <#[MapName]> a rr:TriplesMap ;
+    rdfs:label "[TriplesMap 단명]"@ko ;
+    rdfs:comment "[소스 테이블/SQL] → [타깃 클래스 or 프로퍼티]. [Named Graph 이름]."@ko ;
     rr:logicalTable [ rr:tableName "[table_or_view]" ] ;
     rr:subjectMap [
         rr:template "http://infiniq.co.kr/2026/industry_safety#[table]/{[pk]}" ;

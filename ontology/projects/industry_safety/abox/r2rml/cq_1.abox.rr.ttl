@@ -1,7 +1,20 @@
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Mapping metadata
+<http://infiniq.co.kr/2026/industry_safety/cq_1.abox.r2rml> a rr:Mapping ;
+    owl:versionInfo "1.0.0" ;
+    dcterms:created "2026-05-07"^^xsd:date ;
+    dcterms:source <https://www.law.go.kr/법령/산업안전보건법> ;
+    rdfs:label "CQ_1 R2RML — 안전관리자 선임"@ko .
 
 <#FactoryMap> a rr:TriplesMap ;
+    rdfs:label "사업장 매핑"@ko ;
+    rdfs:comment "factory 테이블 → is:사업장 인스턴스. cq_1.abox 그래프."@ko ;
     rr:logicalTable [ rr:tableName "factory" ] ;
     rr:subjectMap [
         rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{id}" ;
@@ -10,6 +23,8 @@
     ] .
 
 <#NormalWorkerMap> a rr:TriplesMap ;
+    rdfs:label "상시근로자 매핑"@ko ;
+    rdfs:comment "role='상시근로자'인 person → is:상시근로자 인스턴스. cq_1.abox 그래프."@ko ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT p.id AS person_id, p.factory AS factory_id
         FROM person p JOIN role r ON p.role = r.id
@@ -22,6 +37,8 @@
     ] .
 
 <#GoydongMap> a rr:TriplesMap ;
+    rdfs:label "고용 관계 매핑"@ko ;
+    rdfs:comment "factory → person(상시근로자) is:고용하다 관계 생성. cq_1.abox 그래프."@ko ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT p.id AS person_id, p.factory AS factory_id
         FROM person p JOIN role r ON p.role = r.id
@@ -37,6 +54,8 @@
     ] .
 
 <#SafetyManagerMap> a rr:TriplesMap ;
+    rdfs:label "안전관리자 매핑"@ko ;
+    rdfs:comment "role='안전관리자'인 person → is:안전관리자 인스턴스. cq_1.abox 그래프."@ko ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT p.id AS person_id, p.factory AS factory_id
         FROM person p JOIN role r ON p.role = r.id
@@ -49,6 +68,8 @@
     ] .
 
 <#SeonimMap> a rr:TriplesMap ;
+    rdfs:label "선임 관계 매핑"@ko ;
+    rdfs:comment "factory → person(안전관리자) is:선임하다 관계 생성. cq_1.abox 그래프."@ko ;
     rr:logicalTable [ rr:sqlQuery """
         SELECT p.id AS person_id, p.factory AS factory_id
         FROM person p JOIN role r ON p.role = r.id
