@@ -105,6 +105,7 @@ CQ 검증에 직접 필요하지 않더라도 **식별 레이블 컬럼(name 등
 - 컬럼 분류 (테이블별):
     [테이블].[컬럼] → [Object Property | Data Property | rdfs:label | rdf:type 소비 | 미매핑] + 이유
     ...
+- TBox 누락 항목: [없음 | 추가 필요한 프로퍼티 목록]
 - 필요한 트리플 패턴:
     <factory/{id}> a is:사업장
     <factory/{id}> rdfs:label "..."@ko
@@ -118,7 +119,19 @@ CQ 검증에 직접 필요하지 않더라도 **식별 레이블 컬럼(name 등
 - 불확실한 사항: [있으면 명시, 없으면 "없음"]
 ```
 
-불확실한 사항이 있으면 이 시점에 사용자에게 묻는다. 임의로 선택하지 않는다.
+**TBox 누락 항목이 있으면 이 시점에 멈춘다.**
+
+```
+=== TBox 패치 필요 — Human Review ===
+
+mapping-design 진행 중 TBox에 미정의된 프로퍼티 발견:
+  [프로퍼티명] | [유형: owl:ObjectProperty / owl:DatatypeProperty] | [domain → range]
+  ...
+
+/tbox-design [cq_file] [cq_n] 으로 TBox를 먼저 패치한 후 mapping-design을 재개한다.
+```
+
+TBox 패치 승인 후 mapping-design을 재개한다. 불확실한 사항이 있으면 묻는다.
 
 ### 3단계 — DB View 작성 (필요 시)
 
