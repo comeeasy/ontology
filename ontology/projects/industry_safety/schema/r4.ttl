@@ -1,0 +1,32 @@
+@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+is:안전검사대상기계 a owl:Class .
+is:안전검사 a owl:Class .
+is:안전검사결과 a owl:Class .
+
+is:필요하다 a owl:ObjectProperty ;
+    rdfs:domain is:안전검사대상기계 ;
+    rdfs:range is:안전검사 .
+is:has결과 a owl:ObjectProperty ;
+    rdfs:domain is:안전검사 ;
+    rdfs:range is:안전검사결과 .
+
+is:has주기 a owl:DataProperty ;
+    rdfs:domain is:안전검사 ;
+    rdfs:range xsd:duration .
+is:has합격여부 a owl:DataProperty ;
+    rdfs:domain is:안전검사결과 ;
+    rdfs:range xsd:boolean .
+is:has최근검사일 a owl:DataProperty ;
+    rdfs:domain is:안전검사결과 ;
+    rdfs:range xsd:date .
+
+
+
+
+
+
+

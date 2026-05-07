@@ -1,0 +1,33 @@
+# 여러 Named Graph를 한 결과로 합침 (합집합). GRAPH IRIs를 필요한 만큼 추가·삭제
+
+
+# 새로운 ttl 파일 생성
+CONSTRUCT {?s ?p ?o}
+# WHERE {
+#   {
+#     GRAPH <http://infiniq.co.kr/2026/metttc/stp_mett_tc_extension_schema_v0_1> { ?s ?p ?o }
+#   }
+# }
+ 
+# --- 같은 내용을 SELECT로 ---
+# SELECT ?s ?p ?o
+WHERE {
+  {
+    GRAPH <http://infiniq.co.kr/2026/industry_safety/r1> { ?s ?p ?o }
+  } 
+  UNION {
+    GRAPH <http://infiniq.co.kr/2026/industry_safety/r2> { ?s ?p ?o }
+  } 
+  UNION {
+    GRAPH <http://infiniq.co.kr/2026/industry_safety/r3> { ?s ?p ?o }
+  }
+  UNION {
+    GRAPH <http://infiniq.co.kr/2026/industry_safety/r4> { ?s ?p ?o }
+  }
+  UNION {
+    GRAPH <http://infiniq.co.kr/2026/industry_safety/r5> { ?s ?p ?o }
+  }
+  UNION {
+    GRAPH <http://infiniq.co.kr/2026/industry_safety/r1.abox> { ?s ?p ?o }
+  } 
+}

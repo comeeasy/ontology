@@ -1,0 +1,35 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+
+
+
+
+############################
+# Classes
+############################
+
+is:사업장 a owl:Class .
+is:안전보건교육 a owl:Class .
+
+is:상시근로자 a owl:Class .
+is:안전관리자 a owl:Class .
+
+# ###########################
+# Object Properties
+# ###########################
+
+is:고용하다 a owl:ObjectProperty ;
+    rdfs:domain is:사업장 ;
+    rdfs:range is:상시근로자 .
+
+is:선임하다 a owl:ObjectProperty ;
+    rdfs:domain is:사업장 ;
+    rdfs:range is:안전관리자 .
+
+# ###########################
+# Data Properties
+# ###########################

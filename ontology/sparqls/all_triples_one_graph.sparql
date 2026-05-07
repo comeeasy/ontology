@@ -1,0 +1,18 @@
+# 특정 Named Graph 안의 모든 트리플 — 그래프 IRI만 바꿔서 반복 실행
+# RDF 문서로 받으려면 Fuseki에서 CONSTRUCT 결과 형식(text/turtle 등) 선택
+
+# --- CONSTRUCT (그래프 단위 덤프에 적합) ---
+# CONSTRUCT { ?s ?p ?o }
+# WHERE {
+#   GRAPH <http://infiniq.co.kr/2026/industry_safety/r1> {
+#     ?s ?p ?o
+#   }
+# }
+
+# --- SELECT (표로 보거나 LIMIT 걸 때) ---
+SELECT ?s ?p ?o
+WHERE {
+  GRAPH <http://infiniq.co.kr/2026/industry_safety/r1> {
+    ?s ?p ?o
+  }
+}

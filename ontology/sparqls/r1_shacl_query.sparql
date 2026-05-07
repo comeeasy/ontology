@@ -1,0 +1,56 @@
+# R1 제17조 SHACL(sh:select)과 동일한 위반 조건으로 부분 그래프를 만든다.
+# CONSTRUCT 결과에 report: 네임스페이스 트리플을 넣어 "무엇을 위반했는지" 바로 읽히게 한다.
+#
+# Fuseki: POST http://localhost:3030/industry_safety/sparql , Accept: text/turtle
+#
+# 데이터가 Named Graph 밖(기본 합집합)에만 있으면 WHERE 안의 GRAPH 블록을 제거하고 패턴을 한 단 펼치면 된다.
+
+PREFIX is: <http://infiniq.co.kr/2026/industry_safety#>
+PREFIX report: <http://infiniq.co.kr/2026/industry_safety/report#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  # --- 위반 요약(리포트 레이어): 스키마에 없는 진단용 속성이므로 report: 만 사용 ---
+  ?site report:규칙위반 ?viol .
+  ?viol a report:R1_안전관리자선임 ;
+        report:규칙코드 "R1" ;
+        report:조항명 "산업안전보건법 제17조"@ko ;
+        report:위반유형 "안전관리자 미선임"@ko ;
+        report:판단근거 "상시근로자 50인 이상인 사업장에서 is:선임하다(안전관리자) 트리플이 없음"@ko ;
+        report:상시근로자수 ?수 ;
+        report:요건상시근로자수하한 "50"^^xsd:integer ;
+        report:안전관리자선임충족 "false"^^xsd:boolean ;
+        rdfs:label "제17조 (안전관리자 선임 의무) : 상시근로자 50인 이상 사업장은 안전관리자를 1명 이상 선임해야 한다."@ko .
+
+  # --- 원본 ABox 부분 그래프 ---
+  ?site ?pSite ?oSite .
+  ?site is:고용하다 ?근로자 .
+  ?근로자 ?pWorker ?oWorker .
+}
+WHERE {
+  {
+    SELECT ?site (COUNT(?w) AS ?수) WHERE {
+      GRAPH <http://infiniq.co.kr/2026/industry_safety/r1.abox> {
+        ?site is:고용하다 ?w .
+      }
+    }
+    GROUP BY ?site
+  }
+  FILTER (?수 >= 50)
+  FILTER NOT EXISTS {
+    GRAPH <http://infiniq.co.kr/2026/industry_safety/r1.abox> {
+      ?site is:선임하다 ?관리자 .
+    }
+  }
+
+  BIND(BNODE() AS ?viol)
+
+  GRAPH <http://infiniq.co.kr/2026/industry_safety/r1.abox> {
+    OPTIONAL { ?site ?pSite ?oSite . }
+    OPTIONAL {
+      ?site is:고용하다 ?근로자 .
+      OPTIONAL { ?근로자 ?pWorker ?oWorker . }
+    }
+  }
+}

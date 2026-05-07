@@ -1,0 +1,663 @@
+@prefix mim:  <https://www.mimworld.org/mim/4.0.1/> .
+@prefix stp:  <https://ai-cdss.mil.kr/ontology/stp#> .
+@prefix geo:  <http://www.opengis.net/ont/geosparql#> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+<https://ai-cdss.mil.kr/ontology/stp>
+    a owl:Ontology ;
+    rdfs:label "STP METT-TC Extension Ontology"@en ;
+    rdfs:label "STP METT-TC 확장 온톨로지"@ko ;
+    owl:versionInfo "0.1.0-draft" ;
+    rdfs:comment '''
+    Draft COI extension ontology for STP/AI-CDSS.
+    This ontology does not modify MIM. It extends MIM concepts through application-level
+    classes and properties for METT-TC reasoning, including mobility, logistics, equipment
+    performance, terrain effects, and COA validation.
+    '''@en .
+
+#################################################################
+# 1. Top-level STP / METT-TC classes
+#################################################################
+
+stp:METTTCContext
+    a owl:Class ;
+    rdfs:label "METT-TC Context"@en ;
+    rdfs:label "METT-TC 맥락"@ko ;
+    rdfs:comment "A scenario-specific graph context containing mission, enemy, terrain/weather, troops/support, time, and civil information."@en .
+
+stp:OperationalContext
+    a owl:Class ;
+    rdfs:label "Operational Context"@en ;
+    rdfs:label "작전 맥락"@ko .
+
+stp:AnalysisResult
+    a owl:Class ;
+    rdfs:label "Analysis Result"@en ;
+    rdfs:label "분석 결과"@ko ;
+    rdfs:comment "A derived result produced by STP/AI-CDSS analysis modules, such as OCOKA, mobility, visibility, or COA validation."@en .
+
+stp:COA
+    a owl:Class ;
+    rdfs:subClassOf mim:PlanOrder ;
+    rdfs:label "Course of Action"@en ;
+    rdfs:label "방책"@ko .
+
+stp:COAValidationResult
+    a owl:Class ;
+    rdfs:subClassOf stp:AnalysisResult ;
+    rdfs:label "COA Validation Result"@en ;
+    rdfs:label "방책 검증 결과"@ko .
+
+#################################################################
+# 2. MIM-aligned military objects
+#################################################################
+
+stp:ExtendedUnit
+    a owl:Class ;
+    rdfs:subClassOf mim:Unit ;
+    rdfs:label "Extended Unit"@en ;
+    rdfs:label "확장 부대"@ko ;
+    rdfs:comment "Application-level extension of a MIM Unit with capability, logistics, equipment, and operational attributes."@en .
+
+stp:EquipmentItem
+    a owl:Class ;
+    rdfs:subClassOf mim:Materiel ;
+    rdfs:label "Equipment Item"@en ;
+    rdfs:label "장비"@ko .
+
+stp:WeaponSystem
+    a owl:Class ;
+    rdfs:subClassOf stp:EquipmentItem ;
+    rdfs:label "Weapon System"@en ;
+    rdfs:label "무기체계"@ko .
+
+stp:Vehicle
+    a owl:Class ;
+    rdfs:subClassOf stp:EquipmentItem ;
+    rdfs:label "Vehicle"@en ;
+    rdfs:label "차량"@ko .
+
+stp:Facility
+    a owl:Class ;
+    rdfs:subClassOf mim:Facility ;
+    rdfs:label "Facility"@en ;
+    rdfs:label "시설"@ko .
+
+stp:Garrison
+    a owl:Class ;
+    rdfs:subClassOf stp:Facility ;
+    rdfs:label "Garrison"@en ;
+    rdfs:label "주둔지"@ko .
+
+stp:SupplyPoint
+    a owl:Class ;
+    rdfs:subClassOf stp:Facility ;
+    rdfs:label "Supply Point"@en ;
+    rdfs:label "보급소"@ko .
+
+#################################################################
+# 3. Capability model
+#################################################################
+
+stp:Capability
+    a owl:Class ;
+    rdfs:subClassOf mim:Capability ;
+    rdfs:label "Capability"@en ;
+    rdfs:label "능력"@ko .
+
+stp:MobilityCapability
+    a owl:Class ;
+    rdfs:subClassOf stp:Capability ;
+    rdfs:label "Mobility Capability"@en ;
+    rdfs:label "기동 능력"@ko .
+
+stp:FireCapability
+    a owl:Class ;
+    rdfs:subClassOf stp:Capability ;
+    rdfs:label "Fire Capability"@en ;
+    rdfs:label "화력 능력"@ko .
+
+stp:AirDefenseCapability
+    a owl:Class ;
+    rdfs:subClassOf stp:Capability ;
+    rdfs:label "Air Defense Capability"@en ;
+    rdfs:label "방공 능력"@ko .
+
+stp:CommandSupportCapability
+    a owl:Class ;
+    rdfs:subClassOf stp:Capability ;
+    rdfs:label "Command Support Capability"@en ;
+    rdfs:label "지휘지원 능력"@ko .
+
+stp:LogisticsCapability
+    a owl:Class ;
+    rdfs:subClassOf stp:Capability ;
+    rdfs:label "Logistics Capability"@en ;
+    rdfs:label "군수지원 능력"@ko .
+
+#################################################################
+# 4. Controlled value classes
+#################################################################
+
+stp:MobilityType
+    a owl:Class ;
+    rdfs:label "Mobility Type"@en ;
+    rdfs:label "기동 유형"@ko .
+
+stp:OperationalLevel
+    a owl:Class ;
+    rdfs:label "Operational Level"@en ;
+    rdfs:label "작전 수준"@ko .
+
+stp:CommandSupportLevel
+    a owl:Class ;
+    rdfs:label "Command Support Level"@en ;
+    rdfs:label "지휘지원 수준"@ko .
+
+stp:WeightClass
+    a owl:Class ;
+    rdfs:label "Weight Class"@en ;
+    rdfs:label "중량 등급"@ko .
+
+stp:MobilityClass
+    a owl:Class ;
+    rdfs:label "Mobility Class"@en ;
+    rdfs:label "기동성 등급"@ko ;
+    rdfs:comment "GO, SLOW_GO, or NO_GO style classification."@en .
+
+stp:SupplyClass
+    a owl:Class ;
+    rdfs:label "Supply Class"@en ;
+    rdfs:label "보급 종류"@ko .
+
+#################################################################
+# 5. Terrain, mobility, and geospatial model
+#################################################################
+
+stp:TerrainFeature
+    a owl:Class ;
+    rdfs:subClassOf mim:Feature , geo:Feature ;
+    rdfs:label "Terrain Feature"@en ;
+    rdfs:label "지형 객체"@ko .
+
+stp:RoadSegment
+    a owl:Class ;
+    rdfs:subClassOf stp:TerrainFeature ;
+    rdfs:label "Road Segment"@en ;
+    rdfs:label "도로 구간"@ko .
+
+stp:Bridge
+    a owl:Class ;
+    rdfs:subClassOf stp:TerrainFeature ;
+    rdfs:label "Bridge"@en ;
+    rdfs:label "교량"@ko .
+
+stp:River
+    a owl:Class ;
+    rdfs:subClassOf stp:TerrainFeature ;
+    rdfs:label "River"@en ;
+    rdfs:label "하천"@ko .
+
+stp:ForestArea
+    a owl:Class ;
+    rdfs:subClassOf stp:TerrainFeature ;
+    rdfs:label "Forest Area"@en ;
+    rdfs:label "산림지역"@ko .
+
+stp:UrbanArea
+    a owl:Class ;
+    rdfs:subClassOf stp:TerrainFeature ;
+    rdfs:label "Urban Area"@en ;
+    rdfs:label "시가지"@ko .
+
+stp:MobilityCost
+    a owl:Class ;
+    rdfs:label "Mobility Cost"@en ;
+    rdfs:label "기동 비용"@ko ;
+    rdfs:comment "Cost value used by path planning, mobility analysis, or COA validation for a given unit/equipment/terrain combination."@en .
+
+stp:MobilityCostSurface
+    a owl:Class ;
+    rdfs:subClassOf stp:AnalysisResult ;
+    rdfs:label "Mobility Cost Surface"@en ;
+    rdfs:label "기동 비용 표면"@ko .
+
+stp:OCOKAResult
+    a owl:Class ;
+    rdfs:subClassOf stp:AnalysisResult ;
+    rdfs:label "OCOKA Result"@en ;
+    rdfs:label "OCOKA 분석 결과"@ko .
+
+stp:LOSResult
+    a owl:Class ;
+    rdfs:subClassOf stp:AnalysisResult ;
+    rdfs:label "Line of Sight Result"@en ;
+    rdfs:label "가시선 분석 결과"@ko .
+
+#################################################################
+# 6. Logistics and state model
+#################################################################
+
+stp:UnitState
+    a owl:Class ;
+    rdfs:label "Unit State"@en ;
+    rdfs:label "부대 상태"@ko ;
+    rdfs:comment "Time-dependent state of a unit, including location, readiness, supply, and equipment availability."@en .
+
+stp:EquipmentHolding
+    a owl:Class ;
+    rdfs:label "Equipment Holding"@en ;
+    rdfs:label "장비 보유 현황"@ko .
+
+stp:SupplyStatus
+    a owl:Class ;
+    rdfs:label "Supply Status"@en ;
+    rdfs:label "보급 현황"@ko .
+
+stp:ReadinessStatus
+    a owl:Class ;
+    rdfs:label "Readiness Status"@en ;
+    rdfs:label "전투준비태세"@ko .
+
+#################################################################
+# 7. Object properties
+#################################################################
+
+stp:hasMETTTCComponent
+    a owl:ObjectProperty ;
+    rdfs:domain stp:METTTCContext ;
+    rdfs:range owl:Thing ;
+    rdfs:label "has METT-TC component"@en ;
+    rdfs:label "METT-TC 구성요소를 가짐"@ko .
+
+stp:hasCapability
+    a owl:ObjectProperty ;
+    rdfs:domain mim:Object ;
+    rdfs:range stp:Capability ;
+    rdfs:label "has capability"@en ;
+    rdfs:label "능력을 가짐"@ko .
+
+stp:hasMobilityType
+    a owl:ObjectProperty ;
+    rdfs:domain stp:MobilityCapability ;
+    rdfs:range stp:MobilityType ;
+    rdfs:label "has mobility type"@en ;
+    rdfs:label "기동 유형을 가짐"@ko .
+
+stp:hasOperationalLevel
+    a owl:ObjectProperty ;
+    rdfs:domain stp:ExtendedUnit ;
+    rdfs:range stp:OperationalLevel ;
+    rdfs:label "has operational level"@en ;
+    rdfs:label "작전 수준을 가짐"@ko .
+
+stp:hasCommandSupportLevel
+    a owl:ObjectProperty ;
+    rdfs:domain stp:ExtendedUnit ;
+    rdfs:range stp:CommandSupportLevel ;
+    rdfs:label "has command support level"@en ;
+    rdfs:label "지휘지원 수준을 가짐"@ko .
+
+stp:hasWeightClass
+    a owl:ObjectProperty ;
+    rdfs:domain stp:EquipmentItem ;
+    rdfs:range stp:WeightClass ;
+    rdfs:label "has weight class"@en ;
+    rdfs:label "중량 등급을 가짐"@ko .
+
+stp:hasUnitState
+    a owl:ObjectProperty ;
+    rdfs:domain stp:ExtendedUnit ;
+    rdfs:range stp:UnitState ;
+    rdfs:label "has unit state"@en ;
+    rdfs:label "부대 상태를 가짐"@ko .
+
+stp:hasGarrison
+    a owl:ObjectProperty ;
+    rdfs:domain stp:ExtendedUnit ;
+    rdfs:range stp:Garrison ;
+    rdfs:label "has garrison"@en ;
+    rdfs:label "주둔지를 가짐"@ko .
+
+stp:hasCurrentLocation
+    a owl:ObjectProperty ;
+    rdfs:domain stp:UnitState ;
+    rdfs:range geo:Feature ;
+    rdfs:label "has current location"@en ;
+    rdfs:label "현재 위치를 가짐"@ko .
+
+stp:hasEquipmentHolding
+    a owl:ObjectProperty ;
+    rdfs:domain stp:UnitState ;
+    rdfs:range stp:EquipmentHolding ;
+    rdfs:label "has equipment holding"@en ;
+    rdfs:label "장비 보유 현황을 가짐"@ko .
+
+stp:hasEquipmentType
+    a owl:ObjectProperty ;
+    rdfs:domain stp:EquipmentHolding ;
+    rdfs:range stp:EquipmentItem ;
+    rdfs:label "has equipment type"@en ;
+    rdfs:label "장비 유형을 가짐"@ko .
+
+stp:hasSupplyStatus
+    a owl:ObjectProperty ;
+    rdfs:domain stp:UnitState ;
+    rdfs:range stp:SupplyStatus ;
+    rdfs:label "has supply status"@en ;
+    rdfs:label "보급 현황을 가짐"@ko .
+
+stp:hasReadinessStatus
+    a owl:ObjectProperty ;
+    rdfs:domain stp:UnitState ;
+    rdfs:range stp:ReadinessStatus ;
+    rdfs:label "has readiness status"@en ;
+    rdfs:label "전투준비태세를 가짐"@ko .
+
+stp:hasMobilityCost
+    a owl:ObjectProperty ;
+    rdfs:domain stp:TerrainFeature ;
+    rdfs:range stp:MobilityCost ;
+    rdfs:label "has mobility cost"@en ;
+    rdfs:label "기동 비용을 가짐"@ko .
+
+stp:appliesToMobilityType
+    a owl:ObjectProperty ;
+    rdfs:domain stp:MobilityCost ;
+    rdfs:range stp:MobilityType ;
+    rdfs:label "applies to mobility type"@en ;
+    rdfs:label "기동 유형에 적용됨"@ko .
+
+stp:appliesToUnit
+    a owl:ObjectProperty ;
+    rdfs:domain stp:AnalysisResult ;
+    rdfs:range stp:ExtendedUnit ;
+    rdfs:label "applies to unit"@en ;
+    rdfs:label "부대에 적용됨"@ko .
+
+stp:appliesToEquipment
+    a owl:ObjectProperty ;
+    rdfs:domain stp:MobilityCost ;
+    rdfs:range stp:EquipmentItem ;
+    rdfs:label "applies to equipment"@en ;
+    rdfs:label "장비에 적용됨"@ko .
+
+stp:derivedFrom
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:label "derived from"@en ;
+    rdfs:label "에서 파생됨"@ko .
+
+stp:validDuring
+    a owl:ObjectProperty ;
+    rdfs:range time:TemporalEntity ;
+    rdfs:label "valid during"@en ;
+    rdfs:label "유효 기간"@ko .
+
+#################################################################
+# 8. Datatype properties
+#################################################################
+
+stp:identifier
+    a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "identifier"@en ;
+    rdfs:label "식별자"@ko .
+
+stp:nameKo
+    a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "Korean name"@en ;
+    rdfs:label "한글명"@ko .
+
+stp:quantity
+    a owl:DatatypeProperty ;
+    rdfs:range xsd:integer ;
+    rdfs:label "quantity"@en ;
+    rdfs:label "수량"@ko .
+
+stp:availableQuantity
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:EquipmentHolding ;
+    rdfs:range xsd:integer ;
+    rdfs:label "available quantity"@en ;
+    rdfs:label "가용 수량"@ko .
+
+stp:readinessRatio
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:ReadinessStatus ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "readiness ratio"@en ;
+    rdfs:label "전투준비율"@ko .
+
+stp:fuelRatio
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:SupplyStatus ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "fuel ratio"@en ;
+    rdfs:label "연료 보급률"@ko .
+
+stp:ammoRatio
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:SupplyStatus ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "ammunition ratio"@en ;
+    rdfs:label "탄약 보급률"@ko .
+
+stp:rationRatio
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:SupplyStatus ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "ration ratio"@en ;
+    rdfs:label "식량 보급률"@ko .
+
+stp:medicalRatio
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:SupplyStatus ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "medical supply ratio"@en ;
+    rdfs:label "의무물자 보급률"@ko .
+
+stp:maxRoadSpeedKph
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:MobilityCapability ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "max road speed in kph"@en ;
+    rdfs:label "도로 최대속도(km/h)"@ko .
+
+stp:maxOffroadSpeedKph
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:MobilityCapability ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "max offroad speed in kph"@en ;
+    rdfs:label "야지 최대속도(km/h)"@ko .
+
+stp:fuelConsumptionLPerKm
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:MobilityCapability ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "fuel consumption liters per kilometer"@en ;
+    rdfs:label "연료소모량(L/km)"@ko .
+
+stp:maxEffectiveRangeM
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:FireCapability ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "maximum effective range in meters"@en ;
+    rdfs:label "최대 유효 사거리(m)"@ko .
+
+stp:minEngagementAltitudeM
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:AirDefenseCapability ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "minimum engagement altitude in meters"@en ;
+    rdfs:label "최소 교전고도(m)"@ko .
+
+stp:maxEngagementAltitudeM
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:AirDefenseCapability ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "maximum engagement altitude in meters"@en ;
+    rdfs:label "최대 교전고도(m)"@ko .
+
+stp:mobilityCostValue
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:MobilityCost ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "mobility cost value"@en ;
+    rdfs:label "기동 비용값"@ko .
+
+stp:slopePercent
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:TerrainFeature ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "slope percent"@en ;
+    rdfs:label "경사도(%)"@ko .
+
+stp:roadGrade
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:label "road grade"@en ;
+    rdfs:label "도로 등급"@ko .
+
+stp:bridgeMLC
+    a owl:DatatypeProperty ;
+    rdfs:domain stp:Bridge ;
+    rdfs:range xsd:integer ;
+    rdfs:label "bridge military load classification"@en ;
+    rdfs:label "교량 MLC"@ko .
+
+stp:confidence
+    a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "confidence"@en ;
+    rdfs:label "신뢰도"@ko .
+
+#################################################################
+# 9. Core individuals for controlled values
+#################################################################
+
+# Mobility types
+stp:Tracked
+    a stp:MobilityType ;
+    rdfs:label "Tracked"@en ;
+    rdfs:label "궤도형"@ko .
+
+stp:Wheeled
+    a stp:MobilityType ;
+    rdfs:label "Wheeled"@en ;
+    rdfs:label "차륜형"@ko .
+
+stp:FootMobile
+    a stp:MobilityType ;
+    rdfs:label "Foot-mobile"@en ;
+    rdfs:label "도보형"@ko .
+
+stp:AirMobile
+    a stp:MobilityType ;
+    rdfs:label "Air-mobile"@en ;
+    rdfs:label "공중기동형"@ko .
+
+# Operational levels
+stp:Tactical
+    a stp:OperationalLevel ;
+    rdfs:label "Tactical"@en ;
+    rdfs:label "전술"@ko .
+
+stp:Operational
+    a stp:OperationalLevel ;
+    rdfs:label "Operational"@en ;
+    rdfs:label "작전"@ko .
+
+stp:Strategic
+    a stp:OperationalLevel ;
+    rdfs:label "Strategic"@en ;
+    rdfs:label "전략"@ko .
+
+# Command support levels
+stp:Organic
+    a stp:CommandSupportLevel ;
+    rdfs:label "Organic"@en ;
+    rdfs:label "편제"@ko .
+
+stp:Attached
+    a stp:CommandSupportLevel ;
+    rdfs:label "Attached"@en ;
+    rdfs:label "배속"@ko .
+
+stp:DirectSupport
+    a stp:CommandSupportLevel ;
+    rdfs:label "Direct Support"@en ;
+    rdfs:label "직접지원"@ko .
+
+stp:GeneralSupport
+    a stp:CommandSupportLevel ;
+    rdfs:label "General Support"@en ;
+    rdfs:label "일반지원"@ko .
+
+# Weight classes
+stp:Light
+    a stp:WeightClass ;
+    rdfs:label "Light"@en ;
+    rdfs:label "경량"@ko .
+
+stp:Medium
+    a stp:WeightClass ;
+    rdfs:label "Medium"@en ;
+    rdfs:label "중량"@ko .
+
+stp:Heavy
+    a stp:WeightClass ;
+    rdfs:label "Heavy"@en ;
+    rdfs:label "중장량"@ko .
+
+# Mobility classes
+stp:GO
+    a stp:MobilityClass ;
+    rdfs:label "GO"@en ;
+    rdfs:label "기동 가능"@ko .
+
+stp:SLOW_GO
+    a stp:MobilityClass ;
+    rdfs:label "SLOW_GO"@en ;
+    rdfs:label "제한적 기동 가능"@ko .
+
+stp:NO_GO
+    a stp:MobilityClass ;
+    rdfs:label "NO_GO"@en ;
+    rdfs:label "기동 불가"@ko .
+
+#################################################################
+# 10. Alignment placeholders
+#################################################################
+
+# These annotation properties allow STP internal domain objects to maintain traceability
+# to MIM concepts and application objects without replacing runtime DTOs.
+
+stp:mimSemanticId
+    a owl:AnnotationProperty ;
+    rdfs:label "MIM Semantic ID"@en ;
+    rdfs:label "MIM Semantic ID"@ko .
+
+stp:mimClassUri
+    a owl:AnnotationProperty ;
+    rdfs:label "MIM class URI"@en ;
+    rdfs:label "MIM 클래스 URI"@ko .
+
+stp:stpInternalId
+    a owl:AnnotationProperty ;
+    rdfs:label "STP internal ID"@en ;
+    rdfs:label "STP 내부 ID"@ko .
+
+stp:sourceDocumentId
+    a owl:AnnotationProperty ;
+    rdfs:label "source document ID"@en ;
+    rdfs:label "원천 문서 ID"@ko .

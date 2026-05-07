@@ -1,0 +1,54 @@
+@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+
+<#FactoryMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:tableName "factory" ] ;
+    rr:subjectMap [ 
+        rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{id}" ; 
+        rr:class is:사업장 ; 
+        rr:graphMap [ 
+            rr:constant <http://infiniq.co.kr/2026/industry_safety/r1.abox>
+        ]
+    ] .
+
+# 상시 근로자 맵핑
+<#NormalWorkerMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:tableName "v_normal_worker" ] ;
+    rr:subjectMap [ 
+        rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ; 
+        rr:class is:상시근로자 ;    
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/r1.abox> ]
+    ] .
+
+<#NormalWorkerFactoryMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:tableName "v_normal_worker" ] ;
+    rr:subjectMap [ 
+        rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{factory_id}" ; 
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/r1.abox> ]
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate is:고용하다 ;
+        rr:objectMap [ rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ]
+    ] .
+
+<#SafetyManagerMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:tableName "v_safety_manager_map" ] ;
+    rr:subjectMap [ 
+        rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ; 
+        rr:class is:안전관리자 ;
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/r1.abox> ]
+    ] .
+
+<#SafetyManagerFactoryMap> a rr:TriplesMap ;
+    rr:logicalTable [ rr:tableName "v_safety_manager_map" ] ;
+    rr:subjectMap [ 
+        rr:template "http://infiniq.co.kr/2026/industry_safety#factory/{factory_id}" ; 
+        rr:graphMap [ rr:constant <http://infiniq.co.kr/2026/industry_safety/r1.abox> ]
+    ] ;
+    rr:predicateObjectMap [
+        rr:predicate is:선임하다 ;
+        rr:objectMap [ rr:template "http://infiniq.co.kr/2026/industry_safety#person/{person_id}" ]
+    ] .
+
+

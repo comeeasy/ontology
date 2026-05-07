@@ -1,0 +1,11 @@
+services:                                                                     
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: industry_safety
+      POSTGRES_USER: joono
+      POSTGRES_PASSWORD: joono
+    ports:
+      - "5432:5432"
+    volumes:                                                                      
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql

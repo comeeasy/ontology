@@ -1,0 +1,9 @@
+# 데이터셋 industry_safety 안에 데이터가 들어 있는 Named Graph IRI 목록
+# 실행: POST http://localhost:3030/industry_safety/sparql
+# (UI 주소의 #/dataset/industry_safety 는 엔드포인트가 아님)
+
+SELECT DISTINCT ?g
+WHERE {
+  GRAPH ?g { ?s ?p ?o }
+}
+ORDER BY ?g

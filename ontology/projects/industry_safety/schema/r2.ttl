@@ -1,0 +1,40 @@
+@prefix is: <http://infiniq.co.kr/2026/industry_safety#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+###################################################
+# Classes
+###################################################
+
+is:안전보건교육 a owl:Class .
+is:안전보건교육이수기록 a owl:Class .
+is:근로자 a owl:Class .
+is:비사무직 a owl:Class ;
+    rdfs:subClassOf is:근로자 .
+is:사무직 a owl:Class ;
+    rdfs:subClassOf is:근로자 .
+
+
+###################################################
+# Object Properties
+###################################################
+
+is:안전보건교육을이수하다 a owl:ObjectProperty ;
+    rdfs:domain is:근로자 ;
+    rdfs:range  is:안전보건교육 .
+
+is:안전보건교육이수기록을갖다 a owl:ObjectProperty ;
+    rdfs:domain is:근로자 ;
+    rdfs:range  is:안전보건교육이수기록 .
+
+
+
+
+is:has이수일 a owl:DataProperty ;
+    rdfs:domain is:안전보건교육이수기록 ;
+    rdfs:range  xsd:date .
+is:has이수요구시간 a owl:DataProperty ;
+    rdfs:domain is:근로자 ;
+    rdfs:range  xsd:decimal .

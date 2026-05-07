@@ -1,0 +1,20 @@
+{
+    "files.eol": "\n",
+    "[shellscript]": {
+        "files.eol": "\n"
+    },
+    "mentor.sparql.connections": [],
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "onto",
+            "database": "industry_safety",
+            "username": "joono",
+            "password": "joono"
+        }
+    ]
+}
