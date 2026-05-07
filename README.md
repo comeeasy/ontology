@@ -111,7 +111,8 @@ ontology/
 └── scripts/
     ├── reason.sh       # ROBOT 검증 (프로젝트별 .env 참조)
     ├── upload.sh       # Fuseki 적재 (TTL→PUT+graph / NQ→POST)
-    └── gen_config.sh   # r2rml/*.rr.ttl 스캔 → config.ini 자동 생성
+    ├── gen_config.sh   # r2rml/*.rr.ttl 스캔 → config.ini 자동 생성
+    └── create_kg.sh    # Fuseki Named Graph 합치기 → 단일 RDF 파일 저장
 
 rdb/
 ├── docker-compose.yml
@@ -204,6 +205,14 @@ bash ontology/scripts/upload.sh ontology/projects/industry_safety/abox/cq_1.abox
 
 # morph-kgc config.ini 재생성
 bash ontology/scripts/gen_config.sh industry_safety
+
+# Fuseki Named Graph 합치기 → 단일 RDF 파일 저장
+bash ontology/scripts/create_kg.sh \
+  -d industry_safety \
+  -o output/cq_1_merged.ttl \
+  -g http://infiniq.co.kr/2026/industry_safety/cq_1 \
+  -g http://infiniq.co.kr/2026/industry_safety/cq_1.shacl \
+  -g http://infiniq.co.kr/2026/industry_safety/cq_1.abox
 
 # 적재된 그래프 목록 확인 (SPARQL)
 # SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }
